@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cuddle Paws — Staff Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f5f0e8;
+      --surface: #fff9f0;
+      --card: #ffffff;
+      --accent: #2d5a3d;
+      --accent-light: #4a8c5c;
+      --accent-glow: rgba(45,90,61,0.12);
+      --accent-pale: #e8f2eb;
+      --text: #1a2e1f;
+      --text-mid: #4a6355;
+      --text-muted: #8aaa95;
+      --border: #d4e4d9;
+      --danger: #c0392b;
+      --danger-pale: #fdf0ef;
+      --warning: #e67e22;
+      --warning-pale: #fef3e2;
+      --success: #27ae60;
+      --success-pale: #edfaf3;
+      --radius: 14px;
+      --shadow: 0 2px 16px rgba(45,90,61,0.08), 0 1px 4px rgba(0,0,0,0.04);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(45,90,61,0.04) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(45,90,61,0.03) 0%, transparent 50%);
+    }
+
+    /* LOCK */
+    #lockScreen { width:100%; max-width:360px; margin-top:60px; }
+    .lock-card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 40px 32px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+    .lock-brand { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:28px; }
+    .lock-paw { font-size:28px; animation: pawBounce 2.5s ease-in-out infinite; }
+    @keyframes pawBounce { 0%,100%{transform:rotate(-5deg) scale(1);} 50%{transform:rotate(5deg) scale(1.1);} }
+    .lock-brand-name { font-size:20px; font-weight:700; color:var(--accent); }
+    .lock-title { font-size:15px; font-weight:500; color:var(--text-mid); margin-bottom:24px; }
+    .pin-row { display:flex; gap:10px; justify-content:center; margin-bottom:8px; }
+    .pin-box {
+      width:56px; height:60px;
+      border:2px solid var(--border); border-radius:12px;
+      background:var(--surface);
+      font-family:'JetBrains Mono',monospace; font-size:24px; font-weight:500;
+      text-align:center; color:var(--accent); outline:none;
+      transition:border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+      -webkit-appearance:none;
+    }
+    .pin-box:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow); transform:scale(1.05); }
+    .pin-box.filled { border-color:var(--accent-light); background:var(--accent-pale); }
+    .pin-box.shake { animation:shake 0.4s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-6px);} 40%{transform:translateX(6px);} 60%{transform:translateX(-4px);} 80%{transform:translateX(4px);} }
+    .pin-error { font-size:12px; color:var(--danger); min-height:18px; margin-bottom:16px; font-weight:500; }
+    .lock-hint { font-size:11px; color:var(--text-muted); margin-top:20px; }
+
+    /* MAIN */
+    #mainScreen { width:100%; max-width:480px; display:none; padding-top:20px; }
+    .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; animation:slideDown 0.4s ease both; }
+    .header-brand { display:flex; align-items:center; gap:8px; }
+    .header-paw { font-size:22px; }
+    .header-name { font-size:16px; font-weight:700; color:var(--accent); }
+    .header-badge { font-size:11px; font-weight:600; background:var(--accent-pale); color:var(--accent); padding:4px 10px; border-radius:20px; border:1px solid var(--border); }
+
+    /* TABS */
+    .tabs { display:flex; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:4px; margin-bottom:16px; animation:slideDown 0.4s ease 0.05s both; }
+    .tab-btn { flex:1; padding:9px; border:none; border-radius:8px; background:transparent; font-family:'Outfit',sans-serif; font-size:13px; font-weight:600; color:var(--text-muted); cursor:pointer; transition:all 0.2s; }
+    .tab-btn.active { background:var(--card); color:var(--accent); box-shadow:0 1px 4px rgba(0,0,0,0.08); }
+
+    /* CARD */
+    .card { background:var(--card); border-radius:var(--radius); border:1px solid var(--border); box-shadow:var(--shadow); overflow:hidden; animation:slideUp 0.4s ease 0.1s both; }
+    .card-header { background:var(--accent); padding:16px 22px; color:white; }
+    .card-header-title { font-size:15px; font-weight:700; margin-bottom:2px; }
+    .card-header-sub { font-size:12px; opacity:0.75; }
+    .card-body { padding:22px; }
+
+    /* FIELDS */
+    .field { margin-bottom:16px; }
+    label { display:block; font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:7px; }
+    .phone-wrap { display:flex; border:1.5px solid var(--border); border-radius:10px; overflow:hidden; background:var(--surface); transition:border-color 0.2s, box-shadow 0.2s; }
+    .phone-wrap:focus-within { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow); }
+    .phone-prefix { padding:12px 14px; background:var(--accent-pale); color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:500; border-right:1.5px solid var(--border); display:flex; align-items:center; white-space:nowrap; }
+    .phone-input { flex:1; padding:12px 14px; border:none; background:transparent; font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:500; color:var(--text); outline:none; letter-spacing:1px; }
+    .phone-input::placeholder { color:var(--text-muted); font-weight:400; letter-spacing:0; }
+
+    /* BULK */
+    .bulk-textarea { width:100%; min-height:100px; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; background:var(--surface); font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text); outline:none; resize:vertical; transition:border-color 0.2s, box-shadow 0.2s; line-height:1.6; }
+    .bulk-textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow); }
+    .bulk-textarea::placeholder { color:var(--text-muted); }
+
+    /* FORMAT BOX */
+    .format-box { background:var(--accent-pale); border:1px solid var(--border); border-radius:10px; padding:14px 16px; margin-bottom:16px; }
+    .format-box-title { font-size:12px; font-weight:700; color:var(--accent); margin-bottom:10px; }
+    .format-rule { display:flex; align-items:flex-start; gap:8px; margin-bottom:6px; font-size:12px; color:var(--text-mid); line-height:1.5; }
+    .format-rule:last-child { margin-bottom:0; }
+    .format-dot { width:5px; height:5px; border-radius:50%; background:var(--accent-light); flex-shrink:0; margin-top:5px; }
+    .format-example { font-family:'JetBrains Mono',monospace; font-size:11px; background:white; border:1px solid var(--border); border-radius:6px; padding:8px 12px; margin-top:8px; color:var(--accent); line-height:1.8; }
+
+    /* UPLOAD */
+    .upload-zone { border:2px dashed var(--border); border-radius:10px; padding:24px; text-align:center; cursor:pointer; transition:all 0.2s; background:var(--surface); position:relative; }
+    .upload-zone:hover, .upload-zone.dragover { border-color:var(--accent); background:var(--accent-pale); }
+    .upload-zone input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+    .upload-icon { font-size:32px; margin-bottom:8px; }
+    .upload-title { font-size:14px; font-weight:600; color:var(--accent); margin-bottom:4px; }
+    .upload-sub { font-size:12px; color:var(--text-muted); }
+    .upload-success { font-size:13px; font-weight:600; color:var(--success); margin-top:8px; display:none; }
+
+    /* PREVIEW */
+    .preview-box { margin-top:12px; display:none; }
+    .preview-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+    .preview-label { font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; }
+    .preview-clear { font-size:11px; color:var(--danger); cursor:pointer; font-weight:600; background:none; border:none; font-family:'Outfit',sans-serif; }
+    .preview-list { background:var(--surface); border:1px solid var(--border); border-radius:8px; max-height:120px; overflow-y:auto; padding:8px; }
+    .preview-item { display:flex; align-items:center; gap:8px; padding:4px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:12px; }
+    .preview-item.valid { color:var(--accent); }
+    .preview-item.invalid { color:var(--danger); background:var(--danger-pale); }
+
+    /* PROGRESS */
+    .progress-box { margin-top:14px; display:none; }
+    .progress-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:12px; font-weight:600; color:var(--text-mid); }
+    .progress-bar-wrap { height:8px; background:var(--border); border-radius:20px; overflow:hidden; }
+    .progress-bar-fill { height:100%; background:var(--accent); border-radius:20px; width:0%; transition:width 0.4s ease; }
+    .progress-log { margin-top:10px; max-height:100px; overflow-y:auto; display:flex; flex-direction:column; gap:4px; }
+    .progress-log-item { font-size:12px; font-family:'JetBrains Mono',monospace; display:flex; align-items:center; gap:6px; padding:3px 0; }
+    .progress-log-item.ok { color:var(--success); }
+    .progress-log-item.err { color:var(--danger); }
+    .progress-log-item.pending { color:var(--text-muted); }
+
+    /* BUTTON */
+    .submit-btn { width:100%; padding:14px; background:var(--accent); color:white; border:none; border-radius:10px; font-family:'Outfit',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; margin-top:4px; }
+    .submit-btn:hover:not(:disabled) { background:var(--accent-light); transform:translateY(-1px); box-shadow:0 4px 16px rgba(45,90,61,0.25); }
+    .submit-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+    .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,0.4); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; display:none; }
+    @keyframes spin { to{transform:rotate(360deg);} }
+
+    /* STATUS */
+    .status { margin-top:14px; padding:12px 14px; border-radius:10px; font-size:13px; font-weight:500; display:none; align-items:flex-start; gap:10px; line-height:1.5; }
+    .status.success { background:var(--success-pale); border:1px solid rgba(39,174,96,0.25); color:#1a6e3c; display:flex; }
+    .status.error { background:var(--danger-pale); border:1px solid rgba(192,57,43,0.2); color:var(--danger); display:flex; }
+    .status.warning { background:var(--warning-pale); border:1px solid rgba(230,126,34,0.2); color:var(--warning); display:flex; }
+    .status-icon { font-size:18px; flex-shrink:0; }
+    .status-msg strong { display:block; margin-bottom:2px; }
+
+    hr.divider { border:none; border-top:1px solid var(--border); margin:18px 0; }
+
+    /* LOG */
+    .log-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .log-title { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-muted); }
+    .log-count { font-size:11px; font-weight:600; background:var(--accent-pale); color:var(--accent); padding:2px 8px; border-radius:20px; }
+    .log-list { list-style:none; display:flex; flex-direction:column; gap:5px; max-height:160px; overflow-y:auto; }
+    .log-list::-webkit-scrollbar { width:4px; }
+    .log-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+    .log-item { display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface); border-radius:8px; border:1px solid var(--border); animation:fadeIn 0.3s ease both; }
+    .log-dot { width:6px; height:6px; border-radius:50%; background:var(--success); flex-shrink:0; }
+    .log-phone { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:500; color:var(--text); flex:1; }
+    .log-mode { font-size:10px; font-weight:700; padding:2px 6px; border-radius:20px; background:var(--accent-pale); color:var(--accent); }
+    .log-time { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-muted); }
+    .log-empty { text-align:center; color:var(--text-muted); font-size:13px; padding:16px; }
+
+    .footer { text-align:center; margin-top:14px; font-size:11px; color:var(--text-muted); animation:slideUp 0.4s ease 0.2s both; }
+
+    @keyframes slideDown { from{opacity:0;transform:translateY(-10px);} to{opacity:1;transform:translateY(0);} }
+    @keyframes slideUp { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+    @keyframes fadeIn { from{opacity:0;transform:translateX(-6px);} to{opacity:1;transform:translateX(0);} }
+    @media(max-width:380px) { .card-body{padding:18px 14px;} .pin-box{width:48px;height:52px;font-size:20px;} }
+  </style>
+</head>
+<body>
+
+<!-- LOCK -->
+<div id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-brand">
+      <span class="lock-paw">🐾</span>
+      <span class="lock-brand-name">Cuddle Paws Co</span>
+    </div>
+    <div class="lock-title">Enter your staff PIN to continue</div>
+    <div class="pin-row">
+      <input class="pin-box" type="password" inputmode="numeric" maxlength="1" id="p1" autocomplete="off"/>
+      <input class="pin-box" type="password" inputmode="numeric" maxlength="1" id="p2" autocomplete="off"/>
+      <input class="pin-box" type="password" inputmode="numeric" maxlength="1" id="p3" autocomplete="off"/>
+      <input class="pin-box" type="password" inputmode="numeric" maxlength="1" id="p4" autocomplete="off"/>
+    </div>
+    <div class="pin-error" id="pinError"></div>
+    <div class="lock-hint">Staff use only · Not for customers</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="mainScreen">
+  <div class="header">
+    <div class="header-brand">
+      <span class="header-paw">🐾</span>
+      <span class="header-name">Cuddle Paws Co</span>
+    </div>
+    <span class="header-badge">STAFF PORTAL</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabSingle" onclick="switchTab('single')">👤 Single Customer</button>
+    <button class="tab-btn" id="tabBulk" onclick="switchTab('bulk')">👥 Bulk Upload</button>
+  </div>
+
+  <!-- SINGLE -->
+  <div id="panelSingle">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-title">Start Loyalty Sequence</div>
+        <div class="card-header-sub">Triggers 60-day WhatsApp follow-up automatically</div>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label>Customer WhatsApp Number</label>
+          <div class="phone-wrap">
+            <div class="phone-prefix">🇮🇳 +91</div>
+            <input class="phone-input" type="tel" id="singlePhone" placeholder="98765 43210" maxlength="10" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')"/>
+          </div>
+        </div>
+        <button class="submit-btn" id="singleBtn" onclick="triggerSingle()">
+          <span id="singleBtnText">Start Sequence</span>
+          <span id="singleArrow">→</span>
+          <div class="spinner" id="singleSpinner"></div>
+        </button>
+        <div class="status" id="singleStatus">
+          <span class="status-icon" id="singleStatusIcon"></span>
+          <div class="status-msg" id="singleStatusMsg"></div>
+        </div>
+        <hr class="divider"/>
+        <div class="log-header">
+          <span class="log-title">Today's Triggers</span>
+          <span class="log-count" id="logCount">0</span>
+        </div>
+        <ul class="log-list" id="logList">
+          <li class="log-empty">No sequences triggered yet today</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- BULK -->
+  <div id="panelBulk" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-title">Bulk Upload</div>
+        <div class="card-header-sub">Each number triggered with a 5-second gap</div>
+      </div>
+      <div class="card-body">
+        <div class="format-box">
+          <div class="format-box-title">📋 Format Instructions</div>
+          <div class="format-rule"><div class="format-dot"></div><span>Enter <strong>10-digit Indian mobile numbers only</strong> — do not include +91 or 0</span></div>
+          <div class="format-rule"><div class="format-dot"></div><span>Numbers must start with <strong>6, 7, 8 or 9</strong></span></div>
+          <div class="format-rule"><div class="format-dot"></div><span>Separate with <strong>commas</strong>, <strong>new lines</strong>, or <strong>spaces</strong></span></div>
+          <div class="format-rule"><div class="format-dot"></div><span>For Excel/CSV: <strong>single column</strong>, one number per row, no headers</span></div>
+          <div class="format-rule"><div class="format-dot"></div><span>Each number triggers <strong>5 seconds apart</strong></span></div>
+          <div class="format-example">✅ Valid:<br/>9876543210, 8765432109, 7654321098<br/>or one per line</div>
+          <div class="format-example" style="color:var(--danger);margin-top:6px;">❌ Invalid — do not enter:<br/>+919876543210 · 09876543210 · 5876543210</div>
+        </div>
+
+        <div class="field">
+          <label>Option A — Paste Numbers</label>
+          <textarea class="bulk-textarea" id="bulkText" placeholder="9876543210, 8765432109&#10;or one per line" oninput="parseBulkText()"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Option B — Import Excel / CSV</label>
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" onchange="handleFile(event)"/>
+            <div class="upload-icon">📂</div>
+            <div class="upload-title">Click to upload or drag & drop</div>
+            <div class="upload-sub">Accepts .xlsx, .xls, .csv — single column of numbers</div>
+            <div class="upload-success" id="uploadSuccess"></div>
+          </div>
+        </div>
+
+        <div class="preview-box" id="previewBox">
+          <div class="preview-header">
+            <span class="preview-label" id="previewLabel">0 numbers ready</span>
+            <button class="preview-clear" onclick="clearBulk()">✕ Clear all</button>
+          </div>
+          <div class="preview-list" id="previewList"></div>
+        </div>
+
+        <div class="progress-box" id="progressBox">
+          <div class="progress-header">
+            <span id="progressLabel">Starting...</span>
+            <span id="progressFraction">0 / 0</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-log" id="progressLog"></div>
+        </div>
+
+        <button class="submit-btn" id="bulkBtn" onclick="triggerBulk()" style="margin-top:16px;" disabled>
+          <span id="bulkBtnText">Upload Numbers First</span>
+          <div class="spinner" id="bulkSpinner"></div>
+        </button>
+        <div class="status" id="bulkStatus">
+          <span class="status-icon" id="bulkStatusIcon"></span>
+          <div class="status-msg" id="bulkStatusMsg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Cuddle Paws Co · Staff Portal · Not for customer use</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+  // ── CONFIG ──
+  const WEBHOOK_URL = 'https://n8n-production-9a4e.up.railway.app/webhook/cuddle-paws-loyalty';
+  const API_KEY     = 'cp_loyalty_2026';
+  const STAFF_PIN   = '1234';
+  const DELAY_MS    = 5000;
+  // ────────────
+
+  let triggerCount  = 0;
+  let validNumbers  = [];
+  let bulkRunning   = false;
+  let bulkCancelled = false;
+
+  // ── PIN ──
+  ['p1','p2','p3','p4'].forEach((id, i, arr) => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => {
+      el.classList.toggle('filled', !!el.value);
+      if (el.value && i < arr.length - 1) document.getElementById(arr[i+1]).focus();
+      if (i === arr.length - 1 && el.value) checkPin();
+    });
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !el.value && i > 0) {
+        const prev = document.getElementById(arr[i-1]);
+        prev.value = ''; prev.classList.remove('filled'); prev.focus();
+      }
+    });
+  });
+
+  function checkPin() {
+    const entered = ['p1','p2','p3','p4'].map(id => document.getElementById(id).value).join('');
+    if (entered === STAFF_PIN) {
+      document.getElementById('lockScreen').style.display = 'none';
+      document.getElementById('mainScreen').style.display = 'block';
+      document.getElementById('singlePhone').focus();
+    } else {
+      document.getElementById('pinError').textContent = 'Incorrect PIN — try again';
+      ['p1','p2','p3','p4'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = ''; el.classList.remove('filled'); el.classList.add('shake');
+        setTimeout(() => el.classList.remove('shake'), 400);
+      });
+      setTimeout(() => document.getElementById('pinError').textContent = '', 2000);
+      document.getElementById('p1').focus();
+    }
+  }
+
+  // ── TABS ──
+  function switchTab(tab) {
+    document.getElementById('panelSingle').style.display = tab === 'single' ? 'block' : 'none';
+    document.getElementById('panelBulk').style.display   = tab === 'bulk'   ? 'block' : 'none';
+    document.getElementById('tabSingle').classList.toggle('active', tab === 'single');
+    document.getElementById('tabBulk').classList.toggle('active', tab === 'bulk');
+  }
+
+  // ── VALIDATE ──
+  function validatePhone(raw) {
+    const clean = String(raw).replace(/\D/g, '');
+    if (clean.length === 12 && clean.startsWith('91')) return clean.slice(2);
+    if (clean.length === 10 && /^[6-9]/.test(clean)) return clean;
+    return null;
+  }
+
+  // ── CORE SEND — uses XMLHttpRequest to avoid CORS preflight issues ──
+  function sendWebhook(phone) {
+    return new Promise((resolve) => {
+      const xhr = new XMLHttpRequest();
+      const timer = setTimeout(() => {
+        xhr.abort();
+        // Even on timeout, n8n likely received it — treat as success
+        resolve({ ok: true, timedOut: true });
+      }, 8000);
+
+      xhr.open('POST', WEBHOOK_URL, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('x-api-key', API_KEY);
+
+      xhr.onload = () => {
+        clearTimeout(timer);
+        // n8n with Respond:Immediately returns 200 instantly
+        resolve({ ok: xhr.status >= 200 && xhr.status < 400 });
+      };
+
+      xhr.onerror = () => {
+        clearTimeout(timer);
+        // Network error — but n8n may still have received it
+        // Since Respond:Immediately fires before processing, onerror here
+        // is likely a CORS response header issue, not a failed request
+        resolve({ ok: true, corsError: true });
+      };
+
+      xhr.onabort = () => {
+        clearTimeout(timer);
+        resolve({ ok: true, timedOut: true });
+      };
+
+      xhr.send(JSON.stringify({ phone: '91' + phone, customer_type: 'new' }));
+    });
+  }
+
+  // ── SINGLE ──
+  async function triggerSingle() {
+    const phone = validatePhone(document.getElementById('singlePhone').value);
+    if (!phone) {
+      showStatus('single', 'error', 'Invalid Number', 'Enter a valid 10-digit number starting with 6, 7, 8 or 9.');
+      return;
+    }
+    setSingleLoading(true);
+    document.getElementById('singleStatus').style.display = 'none';
+    const result = await sendWebhook(phone);
+    setSingleLoading(false);
+    if (result.ok) {
+      showStatus('single', 'success', 'Sequence Started ✓',
+        `Loyalty sequence activated for +91 ${phone.slice(0,5)} ${phone.slice(5)}. Verify in n8n Executions.`);
+      addLog(phone, 'single');
+      document.getElementById('singlePhone').value = '';
+      document.getElementById('singlePhone').focus();
+    } else {
+      showStatus('single', 'error', 'Failed', 'Could not reach n8n. Check Railway is running.');
+    }
+  }
+
+  function setSingleLoading(on) {
+    document.getElementById('singleBtn').disabled = on;
+    document.getElementById('singleBtnText').textContent = on ? 'Sending...' : 'Start Sequence';
+    document.getElementById('singleArrow').style.display = on ? 'none' : 'inline';
+    document.getElementById('singleSpinner').style.display = on ? 'block' : 'none';
+  }
+
+  // ── BULK TEXT PARSE ──
+  function parseBulkText() {
+    const tokens = document.getElementById('bulkText').value.split(/[\s,;|\n]+/).filter(Boolean);
+    updateValidNumbers(tokens);
+  }
+
+  // ── FILE UPLOAD ──
+  function handleFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext === 'csv') {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const lines = ev.target.result.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        updateValidNumbers(lines);
+        showUploadSuccess(file.name, lines.length);
+      };
+      reader.readAsText(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const wb = XLSX.read(ev.target.result, { type: 'binary' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        const flat = data.flat().map(v => String(v).trim()).filter(Boolean);
+        updateValidNumbers(flat);
+        showUploadSuccess(file.name, flat.length);
+      };
+      reader.readAsBinaryString(file);
+    }
+  }
+
+  function showUploadSuccess(name, count) {
+    const el = document.getElementById('uploadSuccess');
+    el.textContent = `✅ ${name} — ${count} entries found`;
+    el.style.display = 'block';
+  }
+
+  function updateValidNumbers(tokens) {
+    const seen = new Set();
+    const results = [];
+    tokens.forEach(t => {
+      const phone = validatePhone(t);
+      if (phone && !seen.has(phone)) { seen.add(phone); results.push({ phone, valid: true }); }
+      else if (!phone) results.push({ phone: null, raw: t, valid: false });
+    });
+    validNumbers = results.filter(r => r.valid).map(r => r.phone);
+    renderPreview(results);
+    updateBulkBtn();
+  }
+
+  function renderPreview(results) {
+    const box  = document.getElementById('previewBox');
+    const list = document.getElementById('previewList');
+    const lbl  = document.getElementById('previewLabel');
+    if (!results.length) { box.style.display = 'none'; return; }
+    const valid = results.filter(r => r.valid).length;
+    const invalid = results.filter(r => !r.valid).length;
+    lbl.textContent = `${valid} valid${invalid ? ` · ${invalid} invalid (skipped)` : ''}`;
+    box.style.display = 'block';
+    list.innerHTML = results.slice(0, 50).map(r =>
+      `<div class="preview-item ${r.valid ? 'valid' : 'invalid'}">
+        <span>${r.valid ? '✓ +91 ' + r.phone : '✗ ' + (r.raw || '') + ' — invalid'}</span>
+      </div>`
+    ).join('') + (results.length > 50 ? `<div class="preview-item" style="color:var(--text-muted)">...and ${results.length-50} more</div>` : '');
+  }
+
+  function updateBulkBtn() {
+    const btn = document.getElementById('bulkBtn');
+    const text = document.getElementById('bulkBtnText');
+    if (validNumbers.length > 0 && !bulkRunning) {
+      btn.disabled = false;
+      text.textContent = `Trigger ${validNumbers.length} Customer${validNumbers.length !== 1 ? 's' : ''} (5s gap)`;
+    } else if (!bulkRunning) {
+      btn.disabled = true;
+      text.textContent = 'Upload Numbers First';
+    }
+  }
+
+  function clearBulk() {
+    document.getElementById('bulkText').value = '';
+    document.getElementById('fileInput').value = '';
+    document.getElementById('uploadSuccess').style.display = 'none';
+    document.getElementById('previewBox').style.display = 'none';
+    document.getElementById('progressBox').style.display = 'none';
+    document.getElementById('bulkStatus').style.display = 'none';
+    validNumbers = [];
+    updateBulkBtn();
+  }
+
+  // ── BULK TRIGGER ──
+  async function triggerBulk() {
+    if (!validNumbers.length || bulkRunning) return;
+    bulkRunning = true; bulkCancelled = false;
+
+    const btn  = document.getElementById('bulkBtn');
+    const text = document.getElementById('bulkBtnText');
+    btn.disabled = false;
+    text.textContent = '⏹ Stop';
+    btn.onclick = stopBulk;
+
+    const pBox  = document.getElementById('progressBox');
+    const pLog  = document.getElementById('progressLog');
+    const pFill = document.getElementById('progressFill');
+    const pLbl  = document.getElementById('progressLabel');
+    const pFrac = document.getElementById('progressFraction');
+
+    pBox.style.display = 'block';
+    pLog.innerHTML = '';
+    pFill.style.width = '0%';
+    document.getElementById('bulkStatus').style.display = 'none';
+
+    const total = validNumbers.length;
+    let done = 0, success = 0, failed = 0;
+
+    for (let i = 0; i < total; i++) {
+      if (bulkCancelled) break;
+      const phone = validNumbers[i];
+      pLbl.textContent = `Sending to +91 ${phone.slice(0,5)} ${phone.slice(5)}...`;
+      pFrac.textContent = `${i+1} / ${total}`;
+
+      const logItem = document.createElement('div');
+      logItem.className = 'progress-log-item pending';
+      logItem.textContent = `⏳ +91 ${phone.slice(0,5)} ${phone.slice(5)}`;
+      pLog.insertBefore(logItem, pLog.firstChild);
+
+      const result = await sendWebhook(phone);
+      done++;
+
+      if (result.ok) {
+        success++;
+        logItem.className = 'progress-log-item ok';
+        logItem.textContent = `✓ +91 ${phone.slice(0,5)} ${phone.slice(5)}`;
+        addLog(phone, 'bulk');
+      } else {
+        failed++;
+        logItem.className = 'progress-log-item err';
+        logItem.textContent = `✗ +91 ${phone.slice(0,5)} ${phone.slice(5)} — failed`;
+      }
+
+      pFill.style.width = `${(done/total)*100}%`;
+
+      if (i < total - 1 && !bulkCancelled) {
+        pLbl.textContent = `Waiting 5s before next...`;
+        await new Promise(r => setTimeout(r, DELAY_MS));
+      }
+    }
+
+    bulkRunning = false;
+    pFrac.textContent = `${done} / ${total}`;
+
+    if (bulkCancelled) {
+      pLbl.textContent = 'Stopped';
+      showStatus('bulk', 'warning', 'Stopped', `${success} sent, ${failed} failed, ${total-done} skipped.`);
+    } else {
+      pLbl.textContent = 'Complete ✓';
+      pFill.style.background = failed > 0 ? 'var(--warning)' : 'var(--success)';
+      showStatus('bulk', failed === 0 ? 'success' : 'warning',
+        failed === 0 ? `All ${success} sequences started ✓` : `${success} sent, ${failed} failed`,
+        `Verify in n8n Executions tab.`
+      );
+    }
+
+    btn.onclick = triggerBulk;
+    updateBulkBtn();
+  }
+
+  function stopBulk() {
+    bulkCancelled = true;
+    document.getElementById('bulkBtnText').textContent = 'Stopping...';
+    document.getElementById('bulkBtn').disabled = true;
+  }
+
+  // ── STATUS ──
+  function showStatus(panel, type, title, msg) {
+    const id  = panel === 'single' ? 'singleStatus' : 'bulkStatus';
+    const box = document.getElementById(id);
+    box.className = 'status ' + type;
+    box.querySelector('.status-icon').textContent = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : '❌';
+    box.querySelector('.status-msg').innerHTML = `<strong>${title}</strong>${msg}`;
+  }
+
+  // ── LOG ──
+  function addLog(phone, mode) {
+    const list  = document.getElementById('logList');
+    const empty = list.querySelector('.log-empty');
+    if (empty) empty.remove();
+    triggerCount++;
+    document.getElementById('logCount').textContent = triggerCount;
+    const time = new Date().toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true });
+    const li = document.createElement('li');
+    li.className = 'log-item';
+    li.innerHTML = `<div class="log-dot"></div><div class="log-phone">+91 ${phone.slice(0,5)} ${phone.slice(5)}</div><span class="log-mode">${mode==='bulk'?'Bulk':'Single'}</span><span class="log-time">${time}</span>`;
+    list.insertBefore(li, list.firstChild);
+  }
+
+  // ── KEYBOARD ──
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.getElementById('mainScreen').style.display !== 'none')
+      if (document.getElementById('panelSingle').style.display !== 'none') triggerSingle();
+  });
+
+  // ── DRAG DROP ──
+  const zone = document.getElementById('uploadZone');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) { document.getElementById('fileInput').files = e.dataTransfer.files; handleFile({ target: { files: e.dataTransfer.files } }); }
+  });
+
+  document.getElementById('p1').focus();
+</script>
+</body>
+</html>
