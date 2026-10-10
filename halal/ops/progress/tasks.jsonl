@@ -1,0 +1,10 @@
+{"id": 1, "stream": "foundation", "owner": "leader", "text": "Set up the project folder: rules, product note, team method, notes, journal and task-log tools", "status": "done", "opened": "2026-10-10 14:11 IST", "outcome": "Done: halal/ folder with CLAUDE.md, PRODUCT.md, ops/team, ops/journal, ops/progress; tools tested", "closed": "2026-10-10 14:11 IST"}
+{"id": 2, "stream": "product", "owner": "irfan", "text": "Answer the first round of questions (launch order, countries, halal wording reviewer, link to EveryNearby, time zone)", "status": "open", "opened": "2026-10-10 14:11 IST"}
+{"id": 3, "stream": "product", "owner": "irfan", "text": "Choose the site name and buy the domain", "status": "open", "opened": "2026-10-10 14:11 IST"}
+{"id": 4, "stream": "foundation", "owner": "leader", "text": "Propose two or three bot structures with a recommendation", "status": "open", "opened": "2026-10-10 14:11 IST"}
+{"id": 5, "stream": "foundation", "owner": "irfan", "text": "Choose the bot structure, then create the sessions", "status": "open", "opened": "2026-10-10 14:11 IST"}
+{"id": 6, "stream": "product", "owner": "leader", "text": "Write the exact definition of each halal label and of the ingredient statuses, for approval", "status": "open", "opened": "2026-10-10 14:11 IST"}
+{"id": 7, "stream": "product", "owner": "irfan", "text": "Approve the halal label definitions, and name a scholar or imam to review the wording if wanted", "status": "open", "opened": "2026-10-10 14:11 IST"}
+{"id": 8, "stream": "finder", "owner": "irfan", "text": "Decide how to use OpenStreetMap data (A none, B everywhere, C travel countries only), with the lawyer", "status": "open", "opened": "2026-10-10 14:11 IST"}
+{"id": 9, "stream": "design", "owner": "leader", "text": "Phone-width mock-ups: home, weekly plan, shopping list, ingredient checker", "status": "open", "opened": "2026-10-10 14:11 IST"}
+{"id": 10, "stream": "foundation", "owner": "irfan", "text": "Say when the project moves to its own GitHub repository", "status": "open", "opened": "2026-10-10 14:11 IST"}

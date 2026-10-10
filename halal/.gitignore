@@ -1,0 +1,25 @@
+# Secrets never go into version control.
+secrets/
+*.secret
+*.key
+*.pem
+.env
+.env.*
+*-token.txt
+*-smtp.txt
+*-api.txt
+wp-config.php
+
+# Backups and bulk data stay out of the repository.
+backups/
+data/raw/
+*.sql
+*.sql.gz
+*.parquet
+*.osm.pbf
+
+# Local clutter.
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
