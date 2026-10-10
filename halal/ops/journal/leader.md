@@ -29,3 +29,15 @@ Newest entries are at the bottom. Written with ops/journal/note.py.
 - 10 Oct 2026, on reading the handover: "lets build the halal website.... lets set the operational foundation first."
 - 10 Oct 2026: "grill me with questions until you are clear with the plan"
 - 10 Oct 2026: "build here first" (taken to mean: work in this cloud session and this repository before anything is bought).
+
+## 2026-10-10 14:25 IST Handover to a session on Irfan's computer
+
+**What was done**
+- Irfan asked to move the project from this cloud session to his computer. Wrote `docs/handover/HANDOVER-TO-LOCAL.md`: where the files are, the first steps for the local session (copy `halal/` to `C:\Claude\halal`, start git, check the tools, read memory and EveryNearby's model files read only, save the project memory), and the nine open questions with recommendations.
+- Added a task for the move.
+
+**What is left**
+- The local session does the steps in the handover. This cloud session stops making changes once the local copy is confirmed.
+
+**Irfan's decisions**
+- 10 Oct 2026: "make this session remote", then "move from cloud to local competeley".

@@ -8,3 +8,4 @@
 {"id": 8, "stream": "finder", "owner": "irfan", "text": "Decide how to use OpenStreetMap data (A none, B everywhere, C travel countries only), with the lawyer", "status": "open", "opened": "2026-10-10 14:11 IST"}
 {"id": 9, "stream": "design", "owner": "leader", "text": "Phone-width mock-ups: home, weekly plan, shopping list, ingredient checker", "status": "open", "opened": "2026-10-10 14:11 IST"}
 {"id": 10, "stream": "foundation", "owner": "irfan", "text": "Say when the project moves to its own GitHub repository", "status": "open", "opened": "2026-10-10 14:11 IST"}
+{"id": 11, "stream": "foundation", "owner": "irfan", "text": "Start a Claude session on your computer and paste the opening message, so the project moves to C:\\Claude\\halal", "status": "open", "opened": "2026-10-10 14:25 IST"}
